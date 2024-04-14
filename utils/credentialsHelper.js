@@ -30,5 +30,5 @@ function generateOTP() {
 }
 
 module.exports = {
-    randomUsernameGenerator, generateRandomPassword, otpGenerator
+    randomUsernameGenerator, generateRandomPassword, generateOTP
 }

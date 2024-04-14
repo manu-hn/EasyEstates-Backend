@@ -6,7 +6,7 @@ const { StatusCodes: { CREATED, BAD_REQUEST,
 const { hashPassword, isPasswordValid } = require('../utils/passwordHelper.js');
 const { generateToken } = require('../utils/tokenGenerator.js');
 const { userDetailsValidate } = require('../utils/userDetailsValidator.js');
-const { randomUsernameGenerator, generateRandomPassword, } = require('../utils/credentialsHelper.js');
+const { randomUsernameGenerator, generateRandomPassword, generateOTP, } = require('../utils/credentialsHelper.js');
 const { sendEmail } = require('../utils/mailHelper.js');
 
 
@@ -95,7 +95,7 @@ const userLogin = async (request, response, next) => {
 const userGoogleAuthentication = async (request, response, next) => {
     try {
         const { email, name, image } = request.body;
-
+        const otp = generateOTP()
         const isUserAvailable = await UserModel.findOne({ email });
 
         //if user not found
@@ -103,10 +103,10 @@ const userGoogleAuthentication = async (request, response, next) => {
             const randomPassword = generateRandomPassword()
             const username = await randomUsernameGenerator(email);
             const hashedPassword = await hashPassword(randomPassword);
-
+            console.log()
             const newUser = await UserModel.create({
                 fullName: name,
-                username, email, mobile: Math.floor(Math.random() * (9999999999 - 1000000000 + 1)) + 1000000000, password: hashedPassword, avatar: image
+                username, email, mobile: Math.floor(Math.random() * (9999999999 - 1000000000 + 1)) + 1000000000, password: hashedPassword, otp, avatar: image
             });
 
 
