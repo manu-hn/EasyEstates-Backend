@@ -130,7 +130,7 @@ const fetchAllListings = async (req, res, next) => {
 
 
         const listings = await ListingModel.find(queryObject).sort({ [sort]: order === 'desc' ? -1 : 1 }).limit(parseInt(limit || 20)).skip(parseInt(start || 0));
-
+        console.log(listings)
 
         return res.status(OK).json({ error: false, total: listings?.length, listings });
     } catch (error) {
