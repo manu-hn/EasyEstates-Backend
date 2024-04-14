@@ -77,7 +77,7 @@ const userLogin = async (request, response, next) => {
             //     secure: true,
             // });
 
-            const { password, ...data } = isUserAvailable?._doc;
+            const { password, otp, ...data } = isUserAvailable?._doc;
 
             response.status(OK)
                 .json({
