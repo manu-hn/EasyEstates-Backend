@@ -6,7 +6,7 @@ const { StatusCodes: { CREATED, BAD_REQUEST,
 const { hashPassword, isPasswordValid } = require('../utils/passwordHelper.js');
 const { generateToken } = require('../utils/tokenGenerator.js');
 const { userDetailsValidate } = require('../utils/userDetailsValidator.js');
-const { randomUsernameGenerator, generateRandomPassword } = require('../utils/credentialsHelper.js');
+const { randomUsernameGenerator, generateRandomPassword, } = require('../utils/credentialsHelper.js');
 const { sendEmail } = require('../utils/mailHelper.js');
 
 
@@ -26,7 +26,7 @@ const userSignup = async (request, response, next) => {
         }
         else {
             const { fullName, username, email, mobile } = value
-            await sendEmail(email, fullName);
+            await sendEmail(email, fullName, password);
             const newUser = await UserModel.create({
 
                 fullName,
@@ -109,6 +109,8 @@ const userGoogleAuthentication = async (request, response, next) => {
                 username, email, mobile: Math.floor(Math.random() * (9999999999 - 1000000000 + 1)) + 1000000000, password: hashedPassword, avatar: image
             });
 
+
+            sendEmail(email, name, randomPassword);
             const token = generateToken(username, email);
 
             response.cookie('accessToken', token, { httpOnly: true, sameSite: "None", path: "/" });
@@ -140,7 +142,96 @@ const userGoogleAuthentication = async (request, response, next) => {
         next(error)
     }
 }
+const updateUserDetails = async (request, response, next) => {
+
+    try {
+        const { id } = request.params;
+
+        const { password, fullName, username, email, avatar } = request.body;
+
+        if (request?.user?.uid !== id) {
+            return response.status(UNAUTHORIZED).json({ error: true, message: `User Not Authorized` })
+        }
+
+        const isUserAvailable = await UserModel.findById({ _id: id });
+
+        if (!isUserAvailable) {
+            return response.status(UNAUTHORIZED).json({ error: true, message: `User not Authorized` })
+        }
+
+        let hashedPassword;
+        if (password) { hashedPassword = await hashPassword(password); }
+
+
+        const updatedUser = await UserModel.findByIdAndUpdate({ _id: id }, {
+            $set: {
+                fullName, username, email, password: hashedPassword, avatar
+            }
+        }, {
+            new: true,
+            runValidators: true
+        })
+
+        const sendData = {
+            uid: updatedUser._id,
+            fullName: updatedUser.fullName, username: updatedUser.username, email: updatedUser.email
+            , avatar: updatedUser.avatar
+        }
+
+        return response.status(ACCEPTED).json({ error: false, message: `User Details Updated Successfully`, data: sendData })
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+const deleteUserAccount = async (request, response, next) => {
+    try {
+        const { id } = request.params;
+        if (request?.user?.uid !== id) {
+            return response.status(UNAUTHORIZED).json({ error: true, message: `Not Authorized` })
+        }
+
+        await UserModel.findByIdAndDelete({ _id: id });
+
+        return response.status(ACCEPTED).json({ error: false, message: 'User Deleted Successfully!' });
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+const userSignOut = async (request, response, next) => {
+    try {
+
+        response.clearCookie('token');
+        response.status(OK).json({ error: false, message: 'Signed Out Successfully' });
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+
+
+const getUserDetails = async (request, response, next) => {
+    try {
+        const { id } = request.params;
+
+        const isUserAvailable = await UserModel.findById({ _id: id });
+
+        if (!isUserAvailable) {
+            return response.status(NOT_FOUND).json({ error: true, message: 'User Not Available' });
+        }
+
+
+        const { password, ...rest } = isUserAvailable._doc;
+        return response.status(OK).json({ error: false, message: 'Data Retrieved Successfully', data: rest });
+    } catch (error) {
+        next(error);
+    }
+}
 
 module.exports = {
-    userSignup, userLogin, userGoogleAuthentication
+    userSignup, userLogin, userGoogleAuthentication, updateUserDetails, deleteUserAccount, userSignOut, getUserDetails
 }

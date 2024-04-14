@@ -1,5 +1,6 @@
 const { generateFromEmail } = require('unique-username-generator');
 const { generate } = require('generate-password');
+const otpGenerator = require('otp-generator')
 
 function randomUsernameGenerator(email) {
     const username = generateFromEmail(
@@ -8,7 +9,6 @@ function randomUsernameGenerator(email) {
     );
     return username;
 }
-
 
 
 function generateRandomPassword() {
@@ -24,6 +24,11 @@ function generateRandomPassword() {
     return password
 }
 
+
+function generateOTP() {
+    return otpGenerator.generate(6, { upperCaseAlphabets: true, specialChars: false, digits: true, lowerCaseAlphabets: true });
+}
+
 module.exports = {
-    randomUsernameGenerator, generateRandomPassword
+    randomUsernameGenerator, generateRandomPassword, otpGenerator
 }
