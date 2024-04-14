@@ -9,12 +9,15 @@ const transporter = createTransport({
 });
 
 
-const sendEmail = async (email, name) => {
+const sendEmail = async (email, name, password) => {
     const mailOptions = {
         from: "blackdroid.0501@gmail.com",
         to: email,
         subject: "Welcome to Easy Estates",
-        html: `<h1>Hello ${name.toUpperCase()} Thank You for registering with EasyEstates, Lets Explore Properties</h1>`
+        html: `<h1>Hello ${name.toUpperCase()} Thank You for registering with EasyEstates, Lets Explore Properties
+        <br /> Your Email is ${email} and your password is ${password}. 
+        <br /> Do not Share this mail with anyone, It contains information about your account.
+        </h1>`
     }
 
     transporter.sendMail(mailOptions, () => {

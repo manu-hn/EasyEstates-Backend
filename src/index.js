@@ -3,6 +3,7 @@ const cors = require('cors');
 require('./connection/EasyEstates.connection.js');
 const { StatusCodes: { NOT_FOUND } } = require('http-status-codes');
 const UserRoutes = require('./routes/User.EasyEstates.routes.js');
+const ListingsRoutes = require('./routes/Listings.EasyEstates.routes.js');
 const { config } = require('dotenv');
 config();
 
@@ -12,6 +13,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use('/api/easy-estates', UserRoutes);
+app.use('/api/properties', ListingsRoutes);
 
 
 app.use('*', (req, res) => {
