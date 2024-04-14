@@ -1,8 +1,7 @@
 const express = require('express');
 const { userSignup, userLogin,
     userGoogleAuthentication, deleteUserAccount,
-    getUserDetails, updateUserDetails, userSignOut } = require('../controller/User.EasyEstates.Controller');
-
+    getUserDetails, updateUserDetails, userSignOut } = require('../controller/User.EasyEstates.Controller.js');
 const { userAuthByToken } = require('../utils/userAuthentication.js');
 
 const router = express.Router();
