@@ -103,21 +103,19 @@ const userGoogleAuthentication = async (request, response, next) => {
             const randomPassword = generateRandomPassword()
             const username = await randomUsernameGenerator(email);
             const hashedPassword = await hashPassword(randomPassword);
-            console.log()
+
             const newUser = await UserModel.create({
                 fullName: name,
                 username, email, mobile: Math.floor(Math.random() * (9999999999 - 1000000000 + 1)) + 1000000000, password: hashedPassword, otp, avatar: image
             });
 
-
+            const { password, otp, ...data } = newUser;
             sendEmail(email, name, randomPassword);
             const token = generateToken(username, email);
 
             response.cookie('accessToken', token, { httpOnly: true, sameSite: "None", path: "/" });
             return response.status(CREATED).json({
-                error: false, message: 'User Created Successfully !', access_token: token, data: {
-                    uid: newUser._id, fullName: newUser.fullName, email: newUser.email, username: newUser.username, avatar: newUser.avatar
-                }
+                error: false, message: 'User Created Successfully !', access_token: token, data
             })
 
         } else {
