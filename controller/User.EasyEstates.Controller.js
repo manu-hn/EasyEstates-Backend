@@ -120,7 +120,7 @@ const userGoogleAuthentication = async (request, response, next) => {
 
         } else {
             const token = generateToken(isUserAvailable._id, isUserAvailable.email);
-            const { password, otp, ...data } = isUserAvailable
+            const { password, otp, ...data } = isUserAvailable?._doc
             response.cookie('accessToken', token, { httpOnly: true, sameSite: "None", path: "/" });
 
             response.status(OK).json({
