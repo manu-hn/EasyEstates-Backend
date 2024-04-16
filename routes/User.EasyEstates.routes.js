@@ -6,7 +6,7 @@ const { userAuthByToken } = require('../utils/userAuthentication.js');
 
 const router = express.Router();
 
-router.post('/user/signup', userSignup);
+router.post('/user/sign-up', userSignup);
 router.post('/user/login', userLogin);
 router.post('/user/google-auth', userGoogleAuthentication);
 router.post('/user/update/:id', userAuthByToken, updateUserDetails);
