@@ -166,10 +166,11 @@ const updateUserDetails = async (request, response, next) => {
         })
 
         const sendData = {
-            uid: updatedUser._id,
+            _id: updatedUser._id,
             fullName: updatedUser.fullName, username: updatedUser.username, email: updatedUser.email
             , avatar: updatedUser.avatar
         }
+
 
         return response.status(ACCEPTED).json({ error: false, message: `User Details Updated Successfully`, data: sendData })
 
@@ -218,7 +219,7 @@ const getUserDetails = async (request, response, next) => {
         }
 
 
-        const { password, ...rest } = isUserAvailable._doc;
+        const { password, otp, ...rest } = isUserAvailable._doc;
         return response.status(OK).json({ error: false, message: 'Data Retrieved Successfully', data: rest });
     } catch (error) {
         next(error);
