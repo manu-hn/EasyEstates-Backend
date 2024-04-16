@@ -20,6 +20,7 @@ const userSignup = async (request, response, next) => {
         const { value, error } = userDetailsValidate.validate({ fullName, username, email, password, mobile })
 
         const hashedPassword = await hashPassword(value.password);
+        const generatedOTP = generateOTP()
 
         if (error) {
             return response.status(BAD_REQUEST).json({ error: true, message: error.message })
@@ -30,7 +31,7 @@ const userSignup = async (request, response, next) => {
             const newUser = await UserModel.create({
 
                 fullName,
-                username, email, password: hashedPassword, mobile
+                username, email, password: hashedPassword, mobile, otp: generatedOTP
             });
 
 
@@ -43,6 +44,7 @@ const userSignup = async (request, response, next) => {
         }
 
     } catch (error) {
+        response.status(BAD_REQUEST).json({ error: true, message: error.message })
         next(error);
     }
 }
@@ -88,6 +90,7 @@ const userLogin = async (request, response, next) => {
         }
 
     } catch (error) {
+        response.status(BAD_REQUEST).json({ error: true, message: error.message })
         next(error)
     }
 }
@@ -95,7 +98,7 @@ const userLogin = async (request, response, next) => {
 const userGoogleAuthentication = async (request, response, next) => {
     try {
         const { email, name, image } = request.body;
-        const otp = generateOTP()
+        const generatedOTP = generateOTP()
         const isUserAvailable = await UserModel.findOne({ email });
 
         //if user not found
@@ -106,7 +109,7 @@ const userGoogleAuthentication = async (request, response, next) => {
 
             const newUser = await UserModel.create({
                 fullName: name,
-                username, email, mobile: Math.floor(Math.random() * (9999999999 - 1000000000 + 1)) + 1000000000, password: hashedPassword, otp, avatar: image
+                username, email, mobile: Math.floor(Math.random() * (9999999999 - 1000000000 + 1)) + 1000000000, password: hashedPassword, otp: generatedOTP, avatar: image
             });
 
             const { password, otp, ...data } = newUser;
@@ -132,6 +135,7 @@ const userGoogleAuthentication = async (request, response, next) => {
 
 
     } catch (error) {
+        response.status(BAD_REQUEST).json({ error: true, message: error.message })
         next(error)
     }
 }
@@ -175,6 +179,7 @@ const updateUserDetails = async (request, response, next) => {
         return response.status(ACCEPTED).json({ error: false, message: `User Details Updated Successfully`, data: sendData })
 
     } catch (error) {
+        response.status(BAD_REQUEST).json({ error: true, message: error.message })
         next(error);
     }
 }
@@ -191,6 +196,7 @@ const deleteUserAccount = async (request, response, next) => {
         return response.status(ACCEPTED).json({ error: false, message: 'User Deleted Successfully!' });
 
     } catch (error) {
+        response.status(BAD_REQUEST).json({ error: true, message: error.message })
         next(error)
     }
 }
@@ -201,6 +207,7 @@ const userSignOut = async (request, response, next) => {
         response.clearCookie('token');
         response.status(OK).json({ error: false, message: 'Signed Out Successfully' });
     } catch (error) {
+        response.status(BAD_REQUEST).json({ error: true, message: error.message })
         next(error);
     }
 }
@@ -222,6 +229,7 @@ const getUserDetails = async (request, response, next) => {
         const { password, otp, ...rest } = isUserAvailable._doc;
         return response.status(OK).json({ error: false, message: 'Data Retrieved Successfully', data: rest });
     } catch (error) {
+        response.status(BAD_REQUEST).json({ error: true, message: error.message })
         next(error);
     }
 }
