@@ -12,7 +12,7 @@ router.get('/listings/get-listings/:id', userAuthByToken, getListings);
 router.get('/listings/get-listing/:id', getListingById);
 router.delete('/listings/delete/:id', userAuthByToken, deleteListing);
 router.post('/listings/update/:id', userAuthByToken, updateListings);
-router.get('/listings/fetch', fetchAllListings);
+router.get('/listings/display-all', fetchAllListings);
 
 
 
